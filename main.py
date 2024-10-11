@@ -17,7 +17,7 @@ import os
 app = FastAPI()
 
 
-def recommend_products(target_product_id):
+def recommend_products(target_product_id, limit= 6):
     beUrl =  os.getenv('NEXTJS_URL')
 
     print(beUrl)
@@ -61,10 +61,10 @@ def recommend_products(target_product_id):
     
     # Output the top recommendations
     print("Top Recommendations:")
-    for idx, row in recommendations.head(6).iterrows():  # Adjust head(n) for more or fewer recommendations
+    for idx, row in recommendations.head(limit).iterrows():  # Adjust head(n) for more or fewer recommendations
         print(f"Product ID: {row['id']}, Name: {row['name']}, Price: {row['price']}, Similarity Score: {row['similarity_score']:.2f}")
 
-    return recommendations.head(6)  # Return top 5 recommendations
+    return recommendations.head(limit)  # Return top 5 recommendations
 
 
 @app.get("/")
@@ -72,14 +72,14 @@ def read_root():
     return {"Hello": "World"}
 
 @app.get("/api/brands/{product_id}")
-def recommend_products_api(product_id: str):
+def recommend_products_api(product_id: str,limit: int = 6):
     beUrl =  os.getenv('NEXTJS_URL')
     if(beUrl is None):
         return {"error": "NEXTJS_URL is not set"}
     
     resp_target_product = requests.get( beUrl +"/api/brands/"+str(product_id))
     target_product_json = resp_target_product.json()
-    rec = recommend_products(product_id)
+    rec = recommend_products(product_id,limit=limit)
     response_data = {
         "target" : target_product_json,
         "top_4" : loads(rec.to_json(orient='records'))
