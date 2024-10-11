@@ -82,6 +82,6 @@ def recommend_products_api(product_id: str,limit: int = 6):
     rec = recommend_products(product_id,limit=limit)
     response_data = {
         "target" : target_product_json,
-        "top_4" : loads(rec.to_json(orient='records'))
+        "recommendations" : loads(rec.to_json(orient='records'))
     }
     return response_data
