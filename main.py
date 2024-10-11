@@ -1,7 +1,6 @@
 from typing import Union
 
 from fastapi import FastAPI
-from pydantic_settings import BaseSettings, SettingsConfigDict
 
 import pandas as pd
 import requests
@@ -9,16 +8,17 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from json import loads
 
-class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env",extra="allow")
+from dotenv import load_dotenv
 
+load_dotenv()
 
-settings = Settings()
+import os
+
 app = FastAPI()
 
 
 def recommend_products(target_product_id):
-    beUrl = settings.nextjs_url
+    beUrl =  os.getenv('NEXTJS_URL')
 
     print(beUrl)
     # Load data into a DataFrame
@@ -73,7 +73,7 @@ def read_root():
 
 @app.get("/api/brands/{product_id}")
 def recommend_products_api(product_id: str):
-    beUrl = settings.nextjs_url
+    beUrl =  os.getenv('NEXTJS_URL')
     resp_target_product = requests.get( beUrl +"/api/brands/"+str(product_id))
     target_product_json = resp_target_product.json()
     rec = recommend_products(product_id)
