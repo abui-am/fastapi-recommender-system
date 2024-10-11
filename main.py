@@ -74,6 +74,9 @@ def read_root():
 @app.get("/api/brands/{product_id}")
 def recommend_products_api(product_id: str):
     beUrl =  os.getenv('NEXTJS_URL')
+    if(beUrl is None):
+        return {"error": "NEXTJS_URL is not set"}
+    
     resp_target_product = requests.get( beUrl +"/api/brands/"+str(product_id))
     target_product_json = resp_target_product.json()
     rec = recommend_products(product_id)
