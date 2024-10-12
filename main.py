@@ -57,7 +57,11 @@ def recommend_products(target_product_id, limit= 6):
     # If brand_df['boosted'] == True, boost the score by 1.5
     brands_df.loc[brands_df['boosted'] == True, 'similarity_score'] *= 1.5
 
+    # Remove similarity score < 0.5
+    brands_df = brands_df[brands_df['similarity_score'] > 0.5]
+
     recommendations = brands_df[brands_df['id'] != target_product_id].sort_values(by='similarity_score', ascending=False)
+    
     
     # Output the top recommendations
     print("Top Recommendations:")
